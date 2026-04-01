@@ -14,7 +14,7 @@ CREDENTIALS_FILE = 'credentials.json'
 
 # Google Sheets API Setup
 def get_gspread_client():
-    # Try loading from environment variable first (for production)
+    # 1. Try loading from environment variable GOOGLE_CREDENTIALS (JSON string)
     env_creds = os.environ.get('GOOGLE_CREDENTIALS')
     if env_creds:
         try:
@@ -22,19 +22,31 @@ def get_gspread_client():
             creds_dict = json.loads(env_creds)
             scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
             creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-            return gspread.authorize(creds)
+            return gspread.authorize(creds), None
         except Exception as e:
-            print(f"Error loading credentials from env: {e}")
+            return None, f"Error parsing GOOGLE_CREDENTIALS env var: {str(e)}"
             
-    # Fallback to local file (for development)
-    path = os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE)
-    if not os.path.exists(path):
-        print(f"Credentials not found at {path}")
-        return None
+    # 2. Try loading from backend/credentials.json
+    backend_path = os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE)
+    if os.path.exists(backend_path):
+        try:
+            scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+            creds = Credentials.from_service_account_file(backend_path, scopes=scope)
+            return gspread.authorize(creds), None
+        except Exception as e:
+            return None, f"Error loading backend/credentials.json: {str(e)}"
+
+    # 3. Try loading from root/credentials.json (useful for some Render setups)
+    root_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), CREDENTIALS_FILE)
+    if os.path.exists(root_path):
+        try:
+            scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+            creds = Credentials.from_service_account_file(root_path, scopes=scope)
+            return gspread.authorize(creds), None
+        except Exception as e:
+            return None, f"Error loading root/credentials.json: {str(e)}"
     
-    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    creds = Credentials.from_service_account_file(path, scopes=scope)
-    return gspread.authorize(creds)
+    return None, "No credentials found (check GOOGLE_CREDENTIALS env var or credentials.json file)"
 
 @app.route('/')
 def home():
@@ -44,9 +56,9 @@ def home():
 def get_incentives():
     """Fetch data using gspread (authenticated) to avoid CORS/Auth issues."""
     try:
-        client = get_gspread_client()
+        client, error = get_gspread_client()
         if not client:
-            return jsonify({"error": "credentials.json not found"}), 400
+            return jsonify({"error": error}), 400
             
         sheet = client.open_by_key(SHEET_ID).sheet1
         data = sheet.get_all_values()
@@ -62,10 +74,10 @@ def add_incentive():
     """Adds a new row to the spreadsheet using Service Account."""
     try:
         data = request.json
-        client = get_gspread_client()
+        client, error = get_gspread_client()
         
         if not client:
-            return jsonify({"error": "credentials.json not found. Please set up the Service Account."}), 400
+            return jsonify({"error": error}), 400
         
         sheet = client.open_by_key(SHEET_ID).sheet1
         
