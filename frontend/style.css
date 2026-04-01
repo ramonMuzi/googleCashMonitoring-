@@ -231,13 +231,19 @@ h1, h2, h3, h4, .logo-area h1, .btn, .stat-value {
     opacity: 0.5;
 }
 
+.filter-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .filter-group select {
-    padding: 12px 20px;
-    border-radius: 12px;
+    padding: 10px 15px;
+    border-radius: 10px;
     border: 1px solid var(--secondary);
     background: white;
-    margin-left: 10px;
     font-family: inherit;
+    font-size: 14px;
 }
 
 /* Pipeline Cards */
@@ -275,47 +281,36 @@ h1, h2, h3, h4, .logo-area h1, .btn, .stat-value {
     font-weight: 600;
 }
 
-.journey-viz {
-    margin: 40px 0;
+.card-metrics {
+    margin: 25px 0;
+}
+
+.metric-row {
     display: flex;
     justify-content: space-between;
-    position: relative;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: var(--text-light);
 }
 
-.journey-viz::after {
-    height: 3px;
-    background: var(--secondary);
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.step {
-    width: 44px;
-    height: 44px;
-    background: white;
-    border: 2px solid var(--secondary);
-    border-radius: 15px;
-    font-size: 16px;
-    transform: rotate(45deg); /* Modern rotated look */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.step span {
-    transform: rotate(-45deg);
-}
-
-.step.done {
-    background: var(--accent);
-    border-color: var(--accent);
+.metric-row.investment {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--secondary);
+    font-weight: 600;
     color: var(--primary);
 }
 
-.step.active {
-    border-color: var(--primary);
-    color: var(--primary);
-    box-shadow: 0 0 15px rgba(39, 1, 57, 0.2);
+.mini-progress {
+    height: 8px;
+    background: var(--bg-light);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.mini-bar {
+    height: 100%;
+    transition: width 0.5s ease;
 }
 
 .card-footer {
@@ -364,6 +359,40 @@ table th {
 table td {
     padding: 20px;
     border-bottom: 1px solid var(--bg-light);
+    font-size: 14px;
+}
+
+.btn-edit {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: opacity 0.2s;
+}
+
+.btn-edit:hover {
+    opacity: 0.8;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.Complete {
+    background: var(--accent);
+    color: var(--primary);
+}
+
+.status-badge.Ongoing {
+    background: var(--secondary);
+    color: var(--primary);
 }
 
 /* Modal */

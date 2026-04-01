@@ -91,12 +91,52 @@ def add_incentive():
             data.get('ano-entrega'),
             data.get('valor-aprovado'),
             0, # Paid
-            0, # Investment
+            data.get('investimento-ipnet', 0), # Investment
             'Ongoing' # Status
         ]
         
         sheet.append_row(new_row)
         return jsonify({"status": "success"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/incentives/<sow_id>', methods=['PUT', 'POST'])
+def update_incentive(sow_id):
+    """Updates an existing row in the spreadsheet by SOW ID."""
+    try:
+        data = request.json
+        client, error = get_gspread_client()
+        if not client:
+            return jsonify({"error": error}), 400
+            
+        sheet = client.open_by_key(SHEET_ID).sheet1
+        
+        # Find the row index by SOW ID (column B, index 2)
+        # We search in the second column
+        sow_col = sheet.col_values(2)
+        try:
+            row_idx = sow_col.index(sow_id) + 1 # 1-indexed
+        except ValueError:
+            return jsonify({"error": f"SOW {sow_id} not found"}), 404
+
+        # Update specific cells to maintain spreadsheet structure
+        # Mapping frontend names to columns:
+        # A: Tipo, B: SOW, C: Cliente, D: Data Ap, E: Ano Ap, F: Ano En, G: Valor Ap, H: Valor Pago, I: Investimento IPNET, J: Status
+        updates = [
+            {'range': f'A{row_idx}', 'values': [[data.get('tipo-incentivo', '')]]},
+            {'range': f'C{row_idx}', 'values': [[data.get('nome-cliente', '')]]},
+            {'range': f'D{row_idx}', 'values': [[data.get('approval-date', '')]]},
+            {'range': f'F{row_idx}', 'values': [[data.get('ano-entrega', '2025')]]},
+            {'range': f'G{row_idx}', 'values': [[data.get('valor-aprovado', 0)]]},
+            {'range': f'H{row_idx}', 'values': [[data.get('valor-pago', 0)]]},
+            {'range': f'I{row_idx}', 'values': [[data.get('investimento-ipnet', 0)]]},
+            {'range': f'J{row_idx}', 'values': [[data.get('status', 'Ongoing')]]},
+        ]
+        
+        for up in updates:
+            sheet.update(up['range'], up['values'])
+            
+        return jsonify({"status": "success"}), 200
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500

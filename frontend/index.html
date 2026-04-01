@@ -71,6 +71,10 @@
                         <label for="ano-entrega">Ano de Entrega</label>
                         <input type="number" id="ano-entrega" name="ano-entrega" min="2020" max="2030" value="2025">
                     </div>
+                    <div class="form-group">
+                        <label for="investimento-ipnet">Investimento IPNET ($)</label>
+                        <input type="number" id="investimento-ipnet" name="investimento-ipnet" step="0.01" value="0.00">
+                    </div>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" id="btn-cancel">Cancelar</button>
@@ -109,6 +113,22 @@
                 <span class="search-icon">🔍</span>
             </div>
             <div class="filter-group">
+                <select id="filter-type">
+                    <option value="all">Tipos (Todos)</option>
+                    <option value="DAF">DAF</option>
+                    <option value="Commit PSF">Commit PSF</option>
+                    <option value="Non-commit PSF">Non-commit PSF</option>
+                    <option value="DV">DV</option>
+                </select>
+                <select id="filter-investment">
+                    <option value="all">Investimento IPNET (Todos)</option>
+                    <option value="yes">Com Investimento</option>
+                    <option value="no">Sem Investimento</option>
+                </select>
+                <select id="filter-efficiency">
+                    <option value="all">Eficiência (Todos)</option>
+                    <option value="high">Gasto Alto (>80%)</option>
+                </select>
                 <select id="filter-status">
                     <option value="all">Todos os Status</option>
                     <option value="Ongoing">Em Andamento</option>
@@ -123,12 +143,7 @@
         <!-- Pipeline/Storytelling View -->
         <section class="pipeline-section">
             <div class="section-header">
-                <h2>Jornada do Incentivo</h2>
-                <div class="pipeline-legend">
-                    <span class="legend-item approval">Aprovação</span>
-                    <span class="legend-item delivery">Entrega</span>
-                    <span class="legend-item payment">Pagamento</span>
-                </div>
+                <h2>Pipeline de Incentivos</h2>
             </div>
             <div id="incentive-pipeline" class="pipeline-container">
                 <!-- Cards will be injected here -->
@@ -150,7 +165,9 @@
                             <th>Aprovação</th>
                             <th>Valor Aprovado</th>
                             <th>Valor Pago</th>
+                            <th>Inv. IPNET</th>
                             <th>Status</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody id="table-body">
@@ -160,6 +177,65 @@
             </div>
         </section>
     </main>
+
+    <!-- Modal: Edit Record -->
+    <div id="modal-edit" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Incentivo</h2>
+                <button id="close-modal-edit" class="btn-close">&times;</button>
+            </div>
+            <form id="edit-incentive-form">
+                <input type="hidden" id="edit-num-sow" name="num-sow">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="edit-nome-cliente">Nome do Cliente</label>
+                        <input type="text" id="edit-nome-cliente" name="nome-cliente" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-tipo-incentivo">Tipo de Incentivo</label>
+                        <select id="edit-tipo-incentivo" name="tipo-incentivo" required>
+                            <option value="DAF">DAF</option>
+                            <option value="Commit PSF">Commit PSF</option>
+                            <option value="Non-commit PSF">Non-commit PSF</option>
+                            <option value="DV">DV</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-approval-date">Data de Aprovação</label>
+                        <input type="date" id="edit-approval-date" name="approval-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-valor-aprovado">Valor Aprovado ($)</label>
+                        <input type="number" id="edit-valor-aprovado" name="valor-aprovado" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-valor-pago">Valor Pago ($)</label>
+                        <input type="number" id="edit-valor-pago" name="valor-pago" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-ano-entrega">Ano de Entrega</label>
+                        <input type="number" id="edit-ano-entrega" name="ano-entrega">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-investimento-ipnet">Investimento IPNET ($)</label>
+                        <input type="number" id="edit-investimento-ipnet" name="investimento-ipnet" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-status">Status</label>
+                        <select id="edit-status" name="status">
+                            <option value="Ongoing">Em Andamento</option>
+                            <option value="Complete">Concluído</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-edit">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Atualizar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <footer class="main-footer">
         <div class="container">
