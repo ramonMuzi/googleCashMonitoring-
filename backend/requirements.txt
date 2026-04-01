@@ -1,0 +1,6 @@
+flask
+flask-cors
+requests
+gspread
+google-auth
+gunicorn

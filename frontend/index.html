@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incentivos Google | IPNET Cloud</title>
+    <meta name="description" content="Monitoramento prático e didático de incentivos Google para clientes IPNET.">
+    <!-- Google Fonts: Exo (Headings) and Source Sans Pro (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loader" class="loader-overlay">
+        <div class="spinner"></div>
+        <p>Carregando Incentivos...</p>
+    </div>
+
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-area">
+                    <h1>Incentivos<span>Google</span></h1>
+                    <p class="subtitle">Storytelling & Monitoramento Financeiro</p>
+                </div>
+                <div class="header-actions">
+                    <button id="btn-add-record" class="btn btn-primary">
+                        <span class="icon">+</span> Novo Registro
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Modal: Add Record -->
+    <div id="modal-add" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Novo Incentivo</h2>
+                <button id="close-modal" class="btn-close">&times;</button>
+            </div>
+            <form id="add-incentive-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nome-cliente">Nome do Cliente</label>
+                        <input type="text" id="nome-cliente" name="nome-cliente" required placeholder="Ex: Google Cloud">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo-incentivo">Tipo de Incentivo</label>
+                        <select id="tipo-incentivo" name="tipo-incentivo" required>
+                            <option value="DAF">DAF</option>
+                            <option value="Commit PSF">Commit PSF</option>
+                            <option value="Non-commit PSF">Non-commit PSF</option>
+                            <option value="DV">DV</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="num-sow">Núm SOW</label>
+                        <input type="text" id="num-sow" name="num-sow" required placeholder="Ex: FR-007XXX">
+                    </div>
+                    <div class="form-group">
+                        <label for="approval-date">Data de Aprovação</label>
+                        <input type="date" id="approval-date" name="approval-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="valor-aprovado">Valor Aprovado ($)</label>
+                        <input type="number" id="valor-aprovado" name="valor-aprovado" step="0.01" required placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="ano-entrega">Ano de Entrega</label>
+                        <input type="number" id="ano-entrega" name="ano-entrega" min="2020" max="2030" value="2025">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save">Salvar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <main class="container">
+        <!-- Stats Row -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Aprovado</h3>
+                <p id="total-approved" class="stat-value">$ 0,00</p>
+                <div class="stat-trend positive">Total de incentivos em pipeline</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Pago</h3>
+                <p id="total-paid" class="stat-value">$ 0,00</p>
+                <div class="progress-bar-container">
+                    <div id="payment-progress" class="progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <h3>SOWs Ativos</h3>
+                <p id="active-sows" class="stat-value">0</p>
+                <p class="stat-label">Em andamento</p>
+            </div>
+        </section>
+
+        <!-- Search & Filter -->
+        <section class="filters-bar">
+            <div class="search-wrapper">
+                <input type="text" id="search-input" placeholder="Buscar cliente ou SOW...">
+                <span class="search-icon">🔍</span>
+            </div>
+            <div class="filter-group">
+                <select id="filter-status">
+                    <option value="all">Todos os Status</option>
+                    <option value="Ongoing">Em Andamento</option>
+                    <option value="Complete">Concluído</option>
+                </select>
+                <select id="filter-year">
+                    <option value="all">Todos os Anos</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Pipeline/Storytelling View -->
+        <section class="pipeline-section">
+            <div class="section-header">
+                <h2>Jornada do Incentivo</h2>
+                <div class="pipeline-legend">
+                    <span class="legend-item approval">Aprovação</span>
+                    <span class="legend-item delivery">Entrega</span>
+                    <span class="legend-item payment">Pagamento</span>
+                </div>
+            </div>
+            <div id="incentive-pipeline" class="pipeline-container">
+                <!-- Cards will be injected here -->
+            </div>
+        </section>
+
+        <!-- Table View -->
+        <section class="table-section">
+            <div class="section-header">
+                <h2>Listagem Detalhada</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="incentives-table">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Tipo</th>
+                            <th>Núm SOW</th>
+                            <th>Aprovação</th>
+                            <th>Valor Aprovado</th>
+                            <th>Valor Pago</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2026 IPNET Cloud - Sistema de Monitoramento de Incentivos</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
